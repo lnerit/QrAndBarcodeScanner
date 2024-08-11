@@ -38,16 +38,6 @@
                 android:text="@string/activity_device_id_title"
                 style="@style/SettingsGroupTitleTextViewStyle"
                 />
-            <!--
-            <com.example.barcodescanner.feature.common.view.SettingsButton
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:text="@string/activity_device_id_title"
-                app:hint="@string/activity_device_id_title"
-                app:isDelimiterVisible="true"
-                app:isSwitchVisible="false"
-                /> -->
-
 
 
 
