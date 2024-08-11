@@ -242,6 +242,13 @@
                 app:isSwitchVisible="false"
                 />
             <com.example.barcodescanner.feature.common.view.SettingsButton
+                android:id="@+id/button_device_id"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:text="@string/fragment_settings_device_id"
+                app:isSwitchVisible="false"
+                />
+            <com.example.barcodescanner.feature.common.view.SettingsButton
                 android:id="@+id/button_app_version"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

@@ -16,6 +16,7 @@ import com.example.barcodescanner.extension.packageManager
 import com.example.barcodescanner.extension.showError
 import com.example.barcodescanner.feature.common.dialog.DeleteConfirmationDialogFragment
 import com.example.barcodescanner.feature.tabs.settings.camera.ChooseCameraActivity
+import com.example.barcodescanner.feature.tabs.settings.device.DeviceIdActivity
 import com.example.barcodescanner.feature.tabs.settings.formats.SupportedFormatsActivity
 import com.example.barcodescanner.feature.tabs.settings.permissions.AllPermissionsActivity
 import com.example.barcodescanner.feature.tabs.settings.search.ChooseSearchEngineActivity
@@ -84,6 +85,7 @@ class SettingsFragment : Fragment(), DeleteConfirmationDialogFragment.Listener {
         button_permissions.setOnClickListener { AllPermissionsActivity.start(requireActivity()) }
         button_check_updates.setOnClickListener { showAppInMarket() }
         button_source_code.setOnClickListener { showSourceCode() }
+        button_device_id.setOnClickListener { DeviceIdActivity.start(requireActivity()) }
     }
 
     private fun clearHistory() {
@@ -137,10 +139,13 @@ class SettingsFragment : Fragment(), DeleteConfirmationDialogFragment.Listener {
     }
 
     private fun showSourceCode() {
-        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/wewewe718/QrAndBarcodeScanner"))
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/lnerit/QrAndBarcodeScanner"))
         if (intent.resolveActivity(packageManager) != null) {
             startActivity(intent)
         }
+    }
+    private fun showDeviceId() {
+        button_device_id.hint = "Device Id:xxxxxx"
     }
 
     private fun showAppVersion() {

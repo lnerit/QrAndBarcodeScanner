@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">QR &amp; Barcode Scanner</string>
+    <string name="app_name">tSMAS QR &amp; Barcode Scanner</string>
 
     <!--Shortcuts-->
     <string name="shortcut_scan_from_camera">Scan</string>
@@ -237,6 +237,7 @@
     <string name="fragment_settings_check_updates">Check for updates</string>
     <string name="fragment_settings_permissions">Permissions</string>
     <string name="fragment_settings_source_code">Source code</string>
+    <string name="fragment_settings_device_id">Device Id</string>
     <string name="fragment_settings_app_version">App version</string>
 
     <!--Choose theme activity-->
@@ -244,7 +245,7 @@
     <string name="activity_choose_theme_system">Same as system</string>
     <string name="activity_choose_theme_light">Light</string>
     <string name="activity_choose_theme_dark">Dark</string>
-
+    <string name="activity_device_Id_title">Device ID</string>
     <!--Choose camera activity-->
     <string name="activity_choose_camera_title">Camera</string>
     <string name="activity_choose_camera_front">Front</string>
@@ -382,4 +383,6 @@
     <string name="barcode_format_upc_a" translatable="false">UPC-A</string>
     <string name="barcode_format_upc_e" translatable="false">UPC-E</string>
 
+    <!-- DEVICE ID -->
+    <string name="activity_device_id_title">Device ID</string>
 </resources>

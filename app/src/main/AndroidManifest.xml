@@ -200,7 +200,12 @@
             android:configChanges="orientation|screenSize"
             android:exported="false"
             />
-
+        <activity
+            android:name=".feature.tabs.settings.device.DeviceIdActivity"
+            android:screenOrientation="fullSensor"
+            android:configChanges="orientation|screenSize"
+            android:exported="false"
+            />
     </application>
 
 </manifest>

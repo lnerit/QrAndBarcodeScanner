@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.example.barcodescanner.di.rotationHelper
+import com.example.barcodescanner.feature.tabs.settings.device.DeviceIdProvider
 import com.example.barcodescanner.network.ApiClient
 import com.example.barcodescanner.network.ApiService
 import com.google.gson.JsonObject
@@ -16,7 +17,8 @@ abstract class BaseActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        val deviceId = DeviceIdProvider.getDeviceId()  // Get device ID from the singleton
+        Log.d("DeviceId:", deviceId.toString())
         val apiService = ApiClient.getRetrofitInstance().create(ApiService::class.java)
         val call = apiService.PostBarcode(
             code = "23301913",
