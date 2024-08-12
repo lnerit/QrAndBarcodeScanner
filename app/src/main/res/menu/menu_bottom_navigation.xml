@@ -6,16 +6,18 @@
         android:icon="@drawable/ic_favorite_checked"
         android:title="@string/fragment_bottom_tabs_session_tab"
         />
+    <!--
     <item
         android:id="@+id/item_scan"
         android:icon="@drawable/ic_scan"
         android:title="@string/activity_bottom_tabs_scan_tab"
-        />
+        />-->
+    <!--
     <item
         android:id="@+id/item_create"
         android:icon="@drawable/ic_create"
         android:title="@string/activity_bottom_tabs_create_tab"
-        />
+        />-->
     <item
         android:id="@+id/item_history"
         android:icon="@drawable/ic_history"

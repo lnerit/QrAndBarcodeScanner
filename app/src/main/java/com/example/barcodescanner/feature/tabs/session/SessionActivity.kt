@@ -35,4 +35,5 @@ class SessionActivity : BaseActivity() {
         root_view.applySystemWindowInsets(applyTop = true, applyBottom = true)
         toolbar.setNavigationOnClickListener { finish() }
     }
+
 }

@@ -37,6 +37,8 @@
                 android:layout_marginBottom="@dimen/default_margin_small"
                 android:layout_marginHorizontal="@dimen/default_margin"
                 android:text="@string/fragment_bottom_tabs_session_tab"
+                android:textSize="36sp"
+                android:background="#D3D3D3"
                 style="@style/SettingsGroupTitleTextViewStyle"
                 />
 
@@ -45,12 +47,13 @@
                 style="@style/DelimiterStyle"
                 />
             <!--Sessions-->
+            <!--
             <com.example.barcodescanner.feature.common.view.SettingsButton
                 android:id="@+id/button_save_scanned_barcodes"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:text="CS202/Lecture"
-                />
+                />-->
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

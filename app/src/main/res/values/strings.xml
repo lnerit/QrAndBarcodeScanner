@@ -387,7 +387,8 @@
     <string name="activity_device_id_title" translatable="false">Device ID</string>
 
     <!-- SESSION VALUES -->
-    <string name="fragment_session_title" translatable="false">Attendance Sessions</string>
+    <string name="fragment_session_title" translatable="false">tSMAS Attendance Barcode Scanner</string>
+    <string name="fragment_session_error_title" translatable="false"> Session Error </string>
     <string name="fragment_bottom_tabs_session_tab" translatable="false">Sessions</string>
 
 </resources>

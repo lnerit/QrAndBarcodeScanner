@@ -13,12 +13,25 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.SeekBar
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import com.budiyev.android.codescanner.*
+import com.budiyev.android.codescanner.AutoFocusMode
+import com.budiyev.android.codescanner.CodeScanner
+import com.budiyev.android.codescanner.DecodeCallback
+import com.budiyev.android.codescanner.ErrorCallback
+import com.budiyev.android.codescanner.ScanMode
 import com.example.barcodescanner.R
-import com.example.barcodescanner.di.*
-import com.example.barcodescanner.extension.*
+import com.example.barcodescanner.di.barcodeDatabase
+import com.example.barcodescanner.di.barcodeParser
+import com.example.barcodescanner.di.permissionsHelper
+import com.example.barcodescanner.di.scannerCameraHelper
+import com.example.barcodescanner.di.settings
+import com.example.barcodescanner.extension.applySystemWindowInsets
+import com.example.barcodescanner.extension.equalTo
+import com.example.barcodescanner.extension.showError
+import com.example.barcodescanner.extension.vibrateOnce
+import com.example.barcodescanner.extension.vibrator
 import com.example.barcodescanner.feature.barcode.BarcodeActivity
 import com.example.barcodescanner.feature.common.dialog.ConfirmBarcodeDialogFragment
 import com.example.barcodescanner.feature.tabs.scan.file.ScanBarcodeFromFileActivity
@@ -32,7 +45,16 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.schedulers.Schedulers
-import kotlinx.android.synthetic.main.fragment_scan_barcode_from_camera.*
+import kotlinx.android.synthetic.main.fragment_scan_barcode_from_camera.button_decrease_zoom
+import kotlinx.android.synthetic.main.fragment_scan_barcode_from_camera.button_increase_zoom
+import kotlinx.android.synthetic.main.fragment_scan_barcode_from_camera.image_view_flash
+import kotlinx.android.synthetic.main.fragment_scan_barcode_from_camera.image_view_scan_from_file
+import kotlinx.android.synthetic.main.fragment_scan_barcode_from_camera.layout_flash_container
+import kotlinx.android.synthetic.main.fragment_scan_barcode_from_camera.layout_scan_from_file_container
+import kotlinx.android.synthetic.main.fragment_scan_barcode_from_camera.scanner_view
+import kotlinx.android.synthetic.main.fragment_scan_barcode_from_camera.seek_bar_zoom
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.concurrent.TimeUnit
 
 class ScanBarcodeFromCameraFragment : Fragment(), ConfirmBarcodeDialogFragment.Listener {
@@ -53,6 +75,7 @@ class ScanBarcodeFromCameraFragment : Fragment(), ConfirmBarcodeDialogFragment.L
     private var lastResult: Barcode? = null
     private var sview:View?=null
     private var myButton:Button?=null
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
         // Inflate the layout for this fragment
@@ -62,15 +85,22 @@ class ScanBarcodeFromCameraFragment : Fragment(), ConfirmBarcodeDialogFragment.L
          myButton = view.findViewById(R.id.button_session_title_text)
         // Retrieve data from the Bundle
         val courseCode = arguments?.getString("CourseCode")
-        val eventTitle = arguments?.getString("EventTile")
+        val eventTitle = arguments?.getString("EventTitle")
         val roomNumber = arguments?.getString("RoomNumber")
         val time = arguments?.getString("Time")
-        val buttonText = arguments?.getString("ButtonText")
+        val buttonText = arguments?.getString("EventId")
         //Log.e("Display Buttonxxx", data.toString())
         // Use the data
        // val myTextView: TextView = view.findViewById(R.id.text_view_id)
        // myTextView.text = data
-        myButton?.text="$courseCode $eventTitle ($time) | Room: $roomNumber | Text: $buttonText"
+        val parsedDateTime = LocalDateTime.parse(time)
+        // Define a formatter to include AM/PM
+        val formatter = DateTimeFormatter.ofPattern("hh:mm a")
+        val formattedTime = parsedDateTime.format(formatter)
+
+        myButton?.text="$courseCode $eventTitle ($formattedTime) | Room: $roomNumber"
+        Log.d("From the Scanner Screen",myButton?.text.toString())
+        Toast.makeText(requireContext(), myButton?.text.toString(), Toast.LENGTH_LONG).show()
         return view
 
     }

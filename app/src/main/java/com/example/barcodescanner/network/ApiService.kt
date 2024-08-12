@@ -1,12 +1,11 @@
 package com.example.barcodescanner.network
 
+import com.google.gson.JsonObject
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.POST
-import retrofit2.http.Path
 import retrofit2.http.Query
-import com.google.gson.JsonObject as PostBarcode
-
+import com.google.gson.JsonObject as JsonDataSet
 interface  ApiService {
     @POST("PostBarcode")
      fun PostBarcode(
@@ -14,5 +13,10 @@ interface  ApiService {
         @Query("EventId") eventId: String,
         @Query("RoomNumber") roomNumber: String,
         @Query("DeviceId") deviceId: String
-    ): Call<PostBarcode>
+    ): Call<JsonDataSet>
+
+    @GET("ScanBarcodeMobile")
+    fun ScanBarcodeMobile(
+        @Query("DeviceId") deviceId: String
+    ): Call<JsonDataSet>
 }
