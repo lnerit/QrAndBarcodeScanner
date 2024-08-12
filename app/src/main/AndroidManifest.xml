@@ -206,6 +206,11 @@
             android:configChanges="orientation|screenSize"
             android:exported="false"
             />
+        <activity
+            android:name=".feature.tabs.session.SessionActivity"
+            android:screenOrientation="fullSensor"
+            android:configChanges="orientation|screenSize"
+            android:exported="false"
+            />
     </application>
-
 </manifest>

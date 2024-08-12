@@ -3,6 +3,7 @@ package com.example.barcodescanner.feature.tabs
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 import com.example.barcodescanner.BuildConfig
 import com.example.barcodescanner.R
 import com.example.barcodescanner.extension.applySystemWindowInsets
@@ -10,6 +11,7 @@ import com.example.barcodescanner.feature.BaseActivity
 import com.example.barcodescanner.feature.tabs.create.CreateBarcodeFragment
 import com.example.barcodescanner.feature.tabs.history.BarcodeHistoryFragment
 import com.example.barcodescanner.feature.tabs.scan.ScanBarcodeFromCameraFragment
+import com.example.barcodescanner.feature.tabs.session.SessionFragment
 import com.example.barcodescanner.feature.tabs.settings.SettingsFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.activity_bottom_tabs.*
@@ -63,12 +65,14 @@ class BottomTabsActivity : BaseActivity(), BottomNavigationView.OnNavigationItem
         when (intent?.action) {
             ACTION_CREATE_BARCODE -> bottom_navigation_view.selectedItemId = R.id.item_create
             ACTION_HISTORY -> bottom_navigation_view.selectedItemId = R.id.item_history
-            else -> showFragment(R.id.item_scan)
+            //else -> showFragment(R.id.item_scan)
+            else -> showFragment(R.id.item_session)
         }
     }
 
     private fun showFragment(bottomItemId: Int) {
         val fragment = when (bottomItemId) {
+            R.id.item_session -> SessionFragment()
             R.id.item_scan -> ScanBarcodeFromCameraFragment()
             R.id.item_create -> CreateBarcodeFragment()
             R.id.item_history -> BarcodeHistoryFragment()

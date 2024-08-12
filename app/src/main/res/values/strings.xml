@@ -369,7 +369,7 @@
     <string name="barcode_schema_other">Text</string>
 
     <!--Barcode formats-->
-    <string name="barcode_format_qr_code">QR Code</string>
+    <string name="barcode_format_qr_code" translatable="false">QR Code</string>
     <string name="barcode_format_aztec" translatable="false">Aztec</string>
     <string name="barcode_format_codabar" translatable="false">Codabar</string>
     <string name="barcode_format_code_39" translatable="false">Code 39</string>
@@ -384,5 +384,10 @@
     <string name="barcode_format_upc_e" translatable="false">UPC-E</string>
 
     <!-- DEVICE ID -->
-    <string name="activity_device_id_title">Device ID</string>
+    <string name="activity_device_id_title" translatable="false">Device ID</string>
+
+    <!-- SESSION VALUES -->
+    <string name="fragment_session_title" translatable="false">Attendance Sessions</string>
+    <string name="fragment_bottom_tabs_session_tab" translatable="false">Sessions</string>
+
 </resources>

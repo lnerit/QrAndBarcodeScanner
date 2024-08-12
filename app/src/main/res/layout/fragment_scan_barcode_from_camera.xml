@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     >
@@ -78,6 +79,7 @@
         android:textSize="@dimen/default_text_size_extra_small"
         android:textStyle="bold"
         />
+
     <FrameLayout
         android:id="@+id/layout_scan_from_file_container"
         android:layout_width="0dp"
@@ -119,5 +121,15 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@drawable/ic_plus"
         />
-
+    <Button
+        android:id="@+id/button_session_title_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:text=""
+        android:textSize="18sp"
+        android:textColor="@android:color/black"
+        />
 </androidx.constraintlayout.widget.ConstraintLayout>

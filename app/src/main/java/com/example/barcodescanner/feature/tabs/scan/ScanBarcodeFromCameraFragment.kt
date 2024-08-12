@@ -1,13 +1,16 @@
 package com.example.barcodescanner.feature.tabs.scan
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.SeekBar
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -48,13 +51,33 @@ class ScanBarcodeFromCameraFragment : Fragment(), ConfirmBarcodeDialogFragment.L
     private lateinit var codeScanner: CodeScanner
     private var toast: Toast? = null
     private var lastResult: Barcode? = null
-
+    private var sview:View?=null
+    private var myButton:Button?=null
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_scan_barcode_from_camera, container, false)
+
+        // Inflate the layout for this fragment
+        val view = inflater.inflate(R.layout.fragment_scan_barcode_from_camera, container, false)
+
+        // Optionally, set the button text here
+         myButton = view.findViewById(R.id.button_session_title_text)
+        // Retrieve data from the Bundle
+        val courseCode = arguments?.getString("CourseCode")
+        val eventTitle = arguments?.getString("EventTile")
+        val roomNumber = arguments?.getString("RoomNumber")
+        val time = arguments?.getString("Time")
+        val buttonText = arguments?.getString("ButtonText")
+        //Log.e("Display Buttonxxx", data.toString())
+        // Use the data
+       // val myTextView: TextView = view.findViewById(R.id.text_view_id)
+       // myTextView.text = data
+        myButton?.text="$courseCode $eventTitle ($time) | Room: $roomNumber | Text: $buttonText"
+        return view
+
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        sview=view
         supportEdgeToEdge()
         setDarkStatusBar()
         initScanner()
@@ -371,6 +394,17 @@ class ScanBarcodeFromCameraFragment : Fragment(), ConfirmBarcodeDialogFragment.L
         requireActivity().apply {
             setResult(Activity.RESULT_OK, intent)
             finish()
+        }
+    }
+
+    // Public method that you want to call from FragmentA
+    @SuppressLint("LongLogTag")
+    fun displaySessionInformation(courseCode:String, eventTitle:String, roomNumber:String, time:String,eventId:String) {
+        var myButtontext = "$courseCode $eventTitle (Time: $time) | Room: $roomNumber"
+        if (myButton != null) {
+            myButton?.text = myButtontext
+        } else {
+            Log.e("Display Button", "Display button  is not attached to an activity")
         }
     }
 }
