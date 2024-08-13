@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">tSMAS QR &amp; Barcode Scanner</string>
+    <string name="app_name">tSMAS Attendance Tracker</string>
 
     <!--Shortcuts-->
     <string name="shortcut_scan_from_camera">Scan</string>
@@ -388,7 +388,9 @@
 
     <!-- SESSION VALUES -->
     <string name="fragment_session_title" translatable="false">tSMAS Attendance Barcode Scanner</string>
-    <string name="fragment_session_error_title" translatable="false"> Session Error </string>
+    <string name="fragment_session_error_title" translatable="false">tSMAS Attendance Tracking Error </string>
     <string name="fragment_bottom_tabs_session_tab" translatable="false">Sessions</string>
 
+    <!-- ERROR MESSAGES -->
+    <string name="tsmas_barcode_error_no_response_from_server" translatable="false">No response from tSMAS Server</string>
 </resources>

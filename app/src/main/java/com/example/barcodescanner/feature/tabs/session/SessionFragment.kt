@@ -108,7 +108,7 @@ class SessionFragment : Fragment(){
     private fun fetchDataFromDatabase(linearLayout:LinearLayout): List<Item> {
         // Replace this with your actual database query logic
         val deviceId = DeviceIdProvider.getDeviceId()  // Get device ID from the singleton
-        Log.d("DeviceId:", deviceId.toString())
+        //Log.d("DeviceId:", deviceId.toString())
         val apiService = ApiClient.getRetrofitInstance().create(ApiService::class.java)
         /*
         val call = apiService.PostBarcode(
@@ -118,11 +118,10 @@ class SessionFragment : Fragment(){
             deviceId = "A2C78A9A862DACF9"
         )*/
         val callDevice = apiService.ScanBarcodeMobile(
-            deviceId = "A2C78A9A862DACF9"
+            deviceId = deviceId
         )
         // Function to fetch all items using coroutines
             val itemList: MutableList<Item> = mutableListOf()
-
                 callDevice.enqueue(object : Callback<JsonObject> {
                     @RequiresApi(Build.VERSION_CODES.O)
                     override fun onResponse(
@@ -370,17 +369,11 @@ class SessionFragment : Fragment(){
                         Log.e("MainActivity", "Error: ${t.message}")
                         handleError(requireContext(), t.message.toString())
                     }
-
                 })
-
-            /*
-        return listOf(
-            Item1("Button 1"),
-        )*/
             Log.d("Sessions from database:", itemList.toString())
             return itemList
-
     }
+
     data class Item1(
         val name:String
     )

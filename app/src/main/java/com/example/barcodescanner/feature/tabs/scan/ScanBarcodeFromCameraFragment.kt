@@ -1,16 +1,19 @@
 package com.example.barcodescanner.feature.tabs.scan
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
+import android.graphics.Color
+import android.media.MediaPlayer
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.SeekBar
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -35,9 +38,13 @@ import com.example.barcodescanner.extension.vibrator
 import com.example.barcodescanner.feature.barcode.BarcodeActivity
 import com.example.barcodescanner.feature.common.dialog.ConfirmBarcodeDialogFragment
 import com.example.barcodescanner.feature.tabs.scan.file.ScanBarcodeFromFileActivity
+import com.example.barcodescanner.feature.tabs.settings.device.DeviceIdProvider
 import com.example.barcodescanner.model.Barcode
+import com.example.barcodescanner.network.ApiClient
+import com.example.barcodescanner.network.ApiService
 import com.example.barcodescanner.usecase.SupportedBarcodeFormats
 import com.example.barcodescanner.usecase.save
+import com.google.gson.JsonObject
 import com.google.zxing.Result
 import com.google.zxing.ResultMetadataType
 import io.reactivex.Completable
@@ -53,6 +60,9 @@ import kotlinx.android.synthetic.main.fragment_scan_barcode_from_camera.layout_f
 import kotlinx.android.synthetic.main.fragment_scan_barcode_from_camera.layout_scan_from_file_container
 import kotlinx.android.synthetic.main.fragment_scan_barcode_from_camera.scanner_view
 import kotlinx.android.synthetic.main.fragment_scan_barcode_from_camera.seek_bar_zoom
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.concurrent.TimeUnit
@@ -73,41 +83,48 @@ class ScanBarcodeFromCameraFragment : Fragment(), ConfirmBarcodeDialogFragment.L
     private lateinit var codeScanner: CodeScanner
     private var toast: Toast? = null
     private var lastResult: Barcode? = null
-    private var sview:View?=null
     private var myButton:Button?=null
+    private var myTmpButton:Button?=null
+    private var courseCode:String?=null
+    private var eventTitle:String?=null
+    private var roomNumber:String?=null
+    private var eventId:String?=null
+    //private lateinit var greenTick: ImageView
+    private lateinit var mediaPlayer: MediaPlayer
+    private lateinit var greenTickImageView: ImageView
+
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_scan_barcode_from_camera, container, false)
 
+        myButton = view.findViewById(R.id.button_session_title_text)
         // Optionally, set the button text here
-         myButton = view.findViewById(R.id.button_session_title_text)
+
         // Retrieve data from the Bundle
-        val courseCode = arguments?.getString("CourseCode")
-        val eventTitle = arguments?.getString("EventTitle")
-        val roomNumber = arguments?.getString("RoomNumber")
+        courseCode = arguments?.getString("CourseCode")
+        eventTitle = arguments?.getString("EventTitle")
+        roomNumber = arguments?.getString("RoomNumber")
         val time = arguments?.getString("Time")
-        val buttonText = arguments?.getString("EventId")
-        //Log.e("Display Buttonxxx", data.toString())
-        // Use the data
-       // val myTextView: TextView = view.findViewById(R.id.text_view_id)
-       // myTextView.text = data
+        eventId=arguments?.getString("EventId")
         val parsedDateTime = LocalDateTime.parse(time)
         // Define a formatter to include AM/PM
         val formatter = DateTimeFormatter.ofPattern("hh:mm a")
         val formattedTime = parsedDateTime.format(formatter)
 
         myButton?.text="$courseCode $eventTitle ($formattedTime) | Room: $roomNumber"
-        Log.d("From the Scanner Screen",myButton?.text.toString())
+        myTmpButton=myButton
+       // Log.d("From the Scanner Screen",myButton?.text.toString())
         Toast.makeText(requireContext(), myButton?.text.toString(), Toast.LENGTH_LONG).show()
         return view
 
     }
-
+    private lateinit var greenTick: ImageView
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        sview=view
+        greenTickImageView = view.findViewById(R.id.greenTickImageView)
+
         supportEdgeToEdge()
         setDarkStatusBar()
         initScanner()
@@ -117,8 +134,29 @@ class ScanBarcodeFromCameraFragment : Fragment(), ConfirmBarcodeDialogFragment.L
         handleDecreaseZoomClicked()
         handleIncreaseZoomClicked()
         requestPermissions()
+        //greenTick = view.findViewById(R.id.green_tick)
+        // Initialize the MediaPlayer with the success sound
+       mediaPlayer = MediaPlayer.create(requireContext(), R.raw.audio_success)
+
+       // onBarcodeScanSuccess()
+
+    }
+    // Method to handle the barcode detection
+
+    fun onBarcodeScannedSuccessfully() {
+        greenTickImageView.visibility = View.VISIBLE
+        // Optionally animate the appearance
+        greenTickImageView.alpha = 0f
+        greenTickImageView.animate().alpha(1f).setDuration(500).start()
+
+        // Play success sound if needed
+        playSuccessSound()
     }
 
+    private fun playSuccessSound() {
+        val mediaPlayer = MediaPlayer.create(requireContext(), R.raw.audio_success)
+        mediaPlayer.start()
+    }
     override fun onResume() {
         super.onResume()
         if (areAllPermissionsGranted()) {
@@ -282,7 +320,17 @@ class ScanBarcodeFromCameraFragment : Fragment(), ConfirmBarcodeDialogFragment.L
             finishWithResult(result)
             return
         }
+        val deviceId = DeviceIdProvider.getDeviceId()
+        val barcode = barcodeParser.parseResult(result)
+        PostBarcode(barcode, eventId.toString(), roomNumber.toString(),deviceId)
+        myButton=myTmpButton;
 
+        /*
+        // Hide the tick after 2 seconds (2000 milliseconds)
+        Handler(Looper.getMainLooper()).postDelayed({
+            myButton?.text=myTmpButton?.text;
+        }, 2000)
+        */
         if (settings.continuousScanning && result.equalTo(lastResult)) {
             restartPreviewWithDelay(false)
             return
@@ -290,13 +338,108 @@ class ScanBarcodeFromCameraFragment : Fragment(), ConfirmBarcodeDialogFragment.L
 
         vibrateIfNeeded()
 
-        val barcode = barcodeParser.parseResult(result)
+
 
         when {
             settings.confirmScansManually -> showScanConfirmationDialog(barcode)
             settings.saveScannedBarcodesToHistory || settings.continuousScanning -> saveScannedBarcode(barcode)
             else -> navigateToBarcodeScreen(barcode)
         }
+
+    }
+
+    private fun onBarcodeScanSuccess() {
+        greenTick.visibility = View.VISIBLE
+// Play the success sound
+        mediaPlayer.start()
+
+        // Hide the tick after 2 seconds (2000 milliseconds)
+        Handler(Looper.getMainLooper()).postDelayed({
+            greenTick.visibility = View.GONE
+        }, 5000)
+    }
+    override fun onDestroy() {
+        super.onDestroy()
+        // Release the MediaPlayer resources
+        if (this::mediaPlayer.isInitialized) {
+            mediaPlayer.release()
+        }
+    }
+    //Save Attendance Record in tSMAS
+    private fun PostBarcode(barcode:Barcode,eventId:String,roomNumber:String,deviceId:String):Boolean{
+
+       // Inflate the layout for this fragment
+       // val view = inflater.inflate(R.layout.fragment_scan_barcode_from_camera, container, false)
+
+
+       // myButton?.text="This is a test......."
+
+        val apiService = ApiClient.getRetrofitInstance().create(ApiService::class.java)
+        val postData = apiService.PostBarcode(
+            code = barcode.text,
+            eventId = eventId,
+            roomNumber = roomNumber,
+            deviceId = deviceId
+        )
+        var successCode=false;
+        postData.enqueue(object : Callback<JsonObject> {
+            @RequiresApi(Build.VERSION_CODES.O)
+            override fun onResponse(
+                call: Call<JsonObject>,
+                response: Response<JsonObject>
+            ) {
+               // Log.d("Call started...", "Call to URL state...")
+                if (response.isSuccessful) {
+                    val session = response.body()
+                    //Log.d("tSMAS Response data", session.toString())
+                    //Log.d("tSMAS Response", session?.get("success").toString())
+                    var sResponse = session?.get("success")?.asBoolean
+                    var sResponseText = session?.get("responseText")?.asString
+                    // Create a list of Item objects
+
+                    if (sResponse == true) {
+                        //val responseText =
+                        //Log.d("Attendance Submission:", "Response:" + sResponseText)
+                       // showToastCustomMessage("Attendance Submission:"+ sResponseText)
+                        //Display success message to the student
+                        myButton?.text= sResponseText
+
+                        successCode=true;
+                       // onBarcodeScanSuccess()
+                        onBarcodeScannedSuccessfully()
+                        myButton?.setBackgroundColor(Color.parseColor("#90EE90"))
+                    } else {
+                        //Attendence record wasn't save
+                        //Display error message
+                       // Log.d("Attendance Record Response from tSMAS", sResponseText.toString())
+                        //Toast.makeText(requireContext(), sResponseText.toString(), Toast.LENGTH_LONG).show()
+                      //  handleError(requireContext(), sResponseText.toString())
+                        myButton?.text=sResponseText.toString()
+                        myButton?.setBackgroundColor(Color.parseColor("#ff8d6d"))
+                        successCode=false;
+                    }
+                } else {
+                   // Log.d("No response from server", "No response from service...")
+                    //Toast.makeText(requireContext(), "No response", Toast.LENGTH_LONG).show()
+                    //handleError(requireContext(), "No response")
+                   // showToastCustomMessage("No response from tSMAS server...")
+                    myButton?.text="No response from tSMAS server..."
+                    myButton?.setBackgroundColor(Color.parseColor("#ff8d6d"))
+                    successCode=false;
+                }
+
+            }
+
+            override fun onFailure(call: Call<JsonObject>, t: Throwable) {
+               // Log.e("MainActivity", "Error: ${t.message}")
+                //handleError(requireContext(), t.message.toString())
+                //showToastCustomMessage(t.message.toString())
+                myButton?.text=t.message.toString()
+                myButton?.setBackgroundColor(Color.parseColor("#ff8d6d"))
+                successCode=false;
+            }
+        })
+        return successCode;
     }
 
     private fun handleConfirmedBarcode(barcode: Barcode) {
@@ -368,6 +511,9 @@ class ScanBarcodeFromCameraFragment : Fragment(), ConfirmBarcodeDialogFragment.L
             show()
         }
     }
+   // private fun showToastCustomMessage(errorText: String) {
+    //    Toast.makeText(requireContext(), errorText, Toast.LENGTH_LONG).show()
+    //}
 
     private fun requestPermissions() {
         permissionsHelper.requestNotGrantedPermissions(requireActivity() as AppCompatActivity, PERMISSIONS, PERMISSION_REQUEST_CODE)
@@ -424,17 +570,6 @@ class ScanBarcodeFromCameraFragment : Fragment(), ConfirmBarcodeDialogFragment.L
         requireActivity().apply {
             setResult(Activity.RESULT_OK, intent)
             finish()
-        }
-    }
-
-    // Public method that you want to call from FragmentA
-    @SuppressLint("LongLogTag")
-    fun displaySessionInformation(courseCode:String, eventTitle:String, roomNumber:String, time:String,eventId:String) {
-        var myButtontext = "$courseCode $eventTitle (Time: $time) | Room: $roomNumber"
-        if (myButton != null) {
-            myButton?.text = myButtontext
-        } else {
-            Log.e("Display Button", "Display button  is not attached to an activity")
         }
     }
 }
